@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pawan Haresh Gehaney — Resume Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e17;
+  --card: #111827;
+  --card-border: #1e293b;
+  --accent: #3b82f6;
+  --accent-glow: rgba(59,130,246,0.15);
+  --gold: #f59e0b;
+  --emerald: #10b981;
+  --rose: #f43f5e;
+  --violet: #8b5cf6;
+  --cyan: #06b6d4;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Ambient glow */
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.07;
+  pointer-events: none;
+  z-index: 0;
+}
+.glow-orb.blue { width: 500px; height: 500px; background: #3b82f6; top: -100px; right: -100px; }
+.glow-orb.violet { width: 400px; height: 400px; background: #8b5cf6; bottom: 10%; left: -80px; }
+.glow-orb.emerald { width: 350px; height: 350px; background: #10b981; bottom: -50px; right: 20%; }
+
+/* ===== HEADER ===== */
+.header {
+  padding: 28px 36px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--card-border);
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(180deg, rgba(10,14,23,1) 0%, rgba(10,14,23,0.95) 100%);
+}
+.header-left { display: flex; align-items: center; gap: 20px; }
+.avatar {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--accent), var(--violet));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-weight: 900; font-size: 22px; color: #fff;
+  box-shadow: 0 0 24px rgba(59,130,246,0.3);
+}
+.header-info h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px; font-weight: 700;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #f1f5f9 0%, #94a3b8 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.header-info p {
+  font-size: 12px; color: var(--text-muted);
+  margin-top: 2px; letter-spacing: 2px; text-transform: uppercase;
+}
+.header-right { display: flex; gap: 10px; align-items: center; }
+.badge {
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 1px; text-transform: uppercase;
+  border: 1px solid;
+}
+.badge.iimb { border-color: rgba(245,158,11,0.4); color: var(--gold); background: rgba(245,158,11,0.08); }
+.badge.cat { border-color: rgba(16,185,129,0.4); color: var(--emerald); background: rgba(16,185,129,0.08); }
+.badge.exp { border-color: rgba(59,130,246,0.4); color: var(--accent); background: rgba(59,130,246,0.08); }
+
+/* ===== KPI ROW ===== */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
+  padding: 16px 36px;
+  position: relative; z-index: 10;
+}
+.kpi-card {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--kpi-color, var(--accent));
+  opacity: 0.8;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--kpi-color, var(--accent));
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.kpi-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px; font-weight: 500;
+  color: var(--kpi-color, var(--accent));
+  line-height: 1.1;
+}
+.kpi-unit {
+  font-size: 12px; color: var(--kpi-color, var(--accent));
+  opacity: 0.7; margin-left: 2px;
+}
+.kpi-label {
+  font-size: 10px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 1.2px;
+  margin-top: 6px;
+}
+
+/* ===== MAIN GRID ===== */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  padding: 0 36px 24px;
+  position: relative; z-index: 10;
+}
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  padding: 20px 22px;
+  overflow: hidden;
+}
+.panel-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px; font-weight: 600;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.panel-title .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* ===== TIMELINE ===== */
+.timeline-track {
+  position: relative;
+  padding-left: 24px;
+}
+.timeline-track::before {
+  content: '';
+  position: absolute;
+  left: 5px; top: 4px; bottom: 4px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--violet), var(--emerald));
+  border-radius: 2px;
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: all 0.25s;
+}
+.tl-item:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--card-border);
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -23px; top: 16px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--tl-color, var(--accent));
+  background: var(--bg);
+}
+.tl-item.active::before {
+  background: var(--tl-color, var(--accent));
+  box-shadow: 0 0 12px var(--tl-color, var(--accent));
+}
+.tl-header {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.tl-role { font-size: 13px; font-weight: 600; color: var(--text); }
+.tl-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-dim);
+  background: rgba(255,255,255,0.05);
+  padding: 3px 8px; border-radius: 6px;
+}
+.tl-org { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.tl-tag {
+  display: inline-block;
+  font-size: 9px; font-weight: 600;
+  padding: 2px 8px; border-radius: 4px;
+  margin-top: 4px; text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+.tl-tag.edu { background: rgba(59,130,246,0.15); color: var(--accent); }
+.tl-tag.work { background: rgba(245,158,11,0.15); color: var(--gold); }
+
+/* ===== SKILLS GRID ===== */
+.skills-grid {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.skill-chip {
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 11px; font-weight: 500;
+  border: 1px solid var(--card-border);
+  background: rgba(255,255,255,0.02);
+  transition: all 0.25s;
+  cursor: default;
+  position: relative;
+}
+.skill-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+.skill-chip .bar {
+  position: absolute;
+  bottom: 0; left: 8px; right: 8px;
+  height: 2px; border-radius: 2px;
+  opacity: 0.6;
+}
+.skill-chip.cat-ai { border-color: rgba(139,92,246,0.3); color: #c4b5fd; }
+.skill-chip.cat-ai .bar { background: var(--violet); }
+.skill-chip.cat-prog { border-color: rgba(59,130,246,0.3); color: #93c5fd; }
+.skill-chip.cat-prog .bar { background: var(--accent); }
+.skill-chip.cat-analytics { border-color: rgba(6,182,212,0.3); color: #67e8f9; }
+.skill-chip.cat-analytics .bar { background: var(--cyan); }
+.skill-chip.cat-tools { border-color: rgba(16,185,129,0.3); color: #6ee7b7; }
+.skill-chip.cat-tools .bar { background: var(--emerald); }
+.skill-chip.cat-domain { border-color: rgba(245,158,11,0.3); color: #fcd34d; }
+.skill-chip.cat-domain .bar { background: var(--gold); }
+.skill-chip.cat-soft { border-color: rgba(244,63,94,0.3); color: #fda4af; }
+.skill-chip.cat-soft .bar { background: var(--rose); }
+.skill-chip.cat-biz { border-color: rgba(251,146,60,0.3); color: #fdba74; }
+.skill-chip.cat-biz .bar { background: #f97316; }
+
+/* ===== IMPACT BARS ===== */
+.impact-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.impact-label {
+  font-size: 11px; color: var(--text-muted);
+  width: 140px; flex-shrink: 0;
+  text-align: right;
+}
+.impact-bar-wrap {
+  flex: 1; height: 22px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px; overflow: hidden;
+  position: relative;
+}
+.impact-bar {
+  height: 100%;
+  border-radius: 6px;
+  display: flex; align-items: center;
+  padding-left: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  color: #fff;
+  transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+}
+.impact-bar.wipro { background: linear-gradient(90deg, rgba(59,130,246,0.7), rgba(59,130,246,0.3)); }
+.impact-bar.abh { background: linear-gradient(90deg, rgba(245,158,11,0.7), rgba(245,158,11,0.3)); }
+
+/* ===== AWARDS ===== */
+.awards-list { display: flex; flex-direction: column; gap: 6px; }
+.award-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid transparent;
+  transition: all 0.25s;
+}
+.award-item:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: var(--card-border);
+}
+.award-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text-dim);
+  flex-shrink: 0; width: 36px;
+}
+.award-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
+.award-text { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+.award-text strong { color: var(--text); font-weight: 600; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate { animation: fadeUp 0.6s ease-out both; }
+.d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.1s; }
+.d3 { animation-delay: 0.15s; } .d4 { animation-delay: 0.2s; }
+.d5 { animation-delay: 0.25s; } .d6 { animation-delay: 0.3s; }
+.d7 { animation-delay: 0.35s; } .d8 { animation-delay: 0.4s; }
+
+@keyframes pulse { 0%,100% { opacity: 0.07; } 50% { opacity: 0.12; } }
+.glow-orb { animation: pulse 8s ease-in-out infinite; }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 4px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1100px) {
+  .kpi-row { grid-template-columns: repeat(4, 1fr); }
+  .main-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .header { flex-direction: column; gap: 12px; text-align: center; }
+  .header-right { justify-content: center; }
+  .kpi-row, .main-grid { padding: 0 16px 16px; }
+  .header { padding: 20px 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="glow-orb blue"></div>
+<div class="glow-orb violet"></div>
+<div class="glow-orb emerald"></div>
+
+<!-- HEADER -->
+<div class="header animate">
+  <div class="header-left">
+    <div class="avatar">PG</div>
+    <div class="header-info">
+      <h1>Pawan Haresh Gehaney</h1>
+      <p>Data Science &bull; AI/ML &bull; Product Strategy</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="badge iimb">IIMB '26</span>
+    <span class="badge cat">CAT 99%ile</span>
+    <span class="badge exp">40 Mo. Exp</span>
+  </div>
+</div>
+
+<!-- KPI ROW -->
+<div class="kpi-row">
+  <div class="kpi-card animate d1" style="--kpi-color: #3b82f6">
+    <div class="kpi-value">40<span class="kpi-unit">mo</span></div>
+    <div class="kpi-label">Experience</div>
+  </div>
+  <div class="kpi-card animate d2" style="--kpi-color: #10b981">
+    <div class="kpi-value">140<span class="kpi-unit">%</span></div>
+    <div class="kpi-label">Efficiency Gain</div>
+  </div>
+  <div class="kpi-card animate d3" style="--kpi-color: #f43f5e">
+    <div class="kpi-value">82<span class="kpi-unit">%</span></div>
+    <div class="kpi-label">Error Reduction</div>
+  </div>
+  <div class="kpi-card animate d4" style="--kpi-color: #06b6d4">
+    <div class="kpi-value">$160<span class="kpi-unit">K</span></div>
+    <div class="kpi-label">Cost Savings/yr</div>
+  </div>
+  <div class="kpi-card animate d5" style="--kpi-color: #f59e0b">
+    <div class="kpi-value">₹44<span class="kpi-unit">Cr</span></div>
+    <div class="kpi-label">Revenue Impact</div>
+  </div>
+  <div class="kpi-card animate d6" style="--kpi-color: #8b5cf6">
+    <div class="kpi-value">₹112<span class="kpi-unit">Cr</span></div>
+    <div class="kpi-label">Rec. Sales</div>
+  </div>
+  <div class="kpi-card animate d7" style="--kpi-color: #10b981">
+    <div class="kpi-value">250<span class="kpi-unit">+</span></div>
+    <div class="kpi-label">Students Trained</div>
+  </div>
+  <div class="kpi-card animate d8" style="--kpi-color: #f59e0b">
+    <div class="kpi-value">99<span class="kpi-unit">%ile</span></div>
+    <div class="kpi-label">CAT Score</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main-grid">
+
+  <!-- CAREER TIMELINE -->
+  <div class="panel animate d3">
+    <div class="panel-title"><span class="dot" style="background:var(--accent)"></span> Career Journey</div>
+    <div class="timeline-track">
+      <div class="tl-item active" style="--tl-color: var(--gold)">
+        <div class="tl-header">
+          <span class="tl-role">Emerald Summer Intern</span>
+          <span class="tl-date">Apr–May 2025</span>
+        </div>
+        <div class="tl-org">Abhinandan Ventures (Lodha Ventures)</div>
+        <span class="tl-tag work">Internship</span>
+      </div>
+      <div class="tl-item active" style="--tl-color: var(--accent)">
+        <div class="tl-header">
+          <span class="tl-role">MBA — PGP</span>
+          <span class="tl-date">2024–2026</span>
+        </div>
+        <div class="tl-org">Indian Institute of Management, Bangalore</div>
+        <span class="tl-tag edu">Education</span>
+      </div>
+      <div class="tl-item" style="--tl-color: var(--gold)">
+        <div class="tl-header">
+          <span class="tl-role">Asst. Manager — Data Science & Analytics</span>
+          <span class="tl-date">Apr 2021–Jun 2024</span>
+        </div>
+        <div class="tl-org">Wipro Ltd. (38 months)</div>
+        <span class="tl-tag work">Full-time</span>
+      </div>
+      <div class="tl-item" style="--tl-color: var(--gold)">
+        <div class="tl-header">
+          <span class="tl-role">Data Science Trainer</span>
+          <span class="tl-date">2019</span>
+        </div>
+        <div class="tl-org">ExcelR EdTech Pvt. Ltd.</div>
+        <span class="tl-tag work">Part-time</span>
+      </div>
+      <div class="tl-item" style="--tl-color: var(--accent)">
+        <div class="tl-header">
+          <span class="tl-role">BE — Electronics Engineering</span>
+          <span class="tl-date">2013–2017</span>
+        </div>
+        <div class="tl-org">VESIT, Mumbai University (CGPA 5.93)</div>
+        <span class="tl-tag edu">Education</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="panel animate d4">
+    <div class="panel-title"><span class="dot" style="background:var(--violet)"></span> Skills & Competencies</div>
+    <div class="skills-grid">
+      <div class="skill-chip cat-ai">Machine Learning<span class="bar"></span></div>
+      <div class="skill-chip cat-ai">GenAI / LLMs<span class="bar"></span></div>
+      <div class="skill-chip cat-ai">Deep Learning<span class="bar"></span></div>
+      <div class="skill-chip cat-ai">Computer Vision<span class="bar"></span></div>
+      <div class="skill-chip cat-ai">NLP<span class="bar"></span></div>
+      <div class="skill-chip cat-ai">Predictive Modeling<span class="bar"></span></div>
+      <div class="skill-chip cat-ai">Rec. Systems<span class="bar"></span></div>
+      <div class="skill-chip cat-prog">Python<span class="bar"></span></div>
+      <div class="skill-chip cat-prog">SQL<span class="bar"></span></div>
+      <div class="skill-chip cat-analytics">Time Series<span class="bar"></span></div>
+      <div class="skill-chip cat-analytics">Data Viz<span class="bar"></span></div>
+      <div class="skill-chip cat-analytics">Dashboards<span class="bar"></span></div>
+      <div class="skill-chip cat-tools">Tableau<span class="bar"></span></div>
+      <div class="skill-chip cat-tools">Excel / VBA<span class="bar"></span></div>
+      <div class="skill-chip cat-tools">Power BI<span class="bar"></span></div>
+      <div class="skill-chip cat-domain">Inventory Forecasting<span class="bar"></span></div>
+      <div class="skill-chip cat-domain">Logistics<span class="bar"></span></div>
+      <div class="skill-chip cat-domain">Real Estate<span class="bar"></span></div>
+      <div class="skill-chip cat-biz">Product Strategy<span class="bar"></span></div>
+      <div class="skill-chip cat-biz">GTM Strategy<span class="bar"></span></div>
+      <div class="skill-chip cat-biz">Digital Marketing<span class="bar"></span></div>
+      <div class="skill-chip cat-soft">Leadership<span class="bar"></span></div>
+      <div class="skill-chip cat-soft">Stakeholder Mgmt<span class="bar"></span></div>
+      <div class="skill-chip cat-soft">Mentoring<span class="bar"></span></div>
+      <div class="skill-chip cat-soft">Client Comms<span class="bar"></span></div>
+    </div>
+    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+      <span style="font-size:9px; color:var(--text-dim); display:flex; align-items:center; gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--violet);display:inline-block;"></span>AI/ML</span>
+      <span style="font-size:9px; color:var(--text-dim); display:flex; align-items:center; gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--accent);display:inline-block;"></span>Programming</span>
+      <span style="font-size:9px; color:var(--text-dim); display:flex; align-items:center; gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--cyan);display:inline-block;"></span>Analytics</span>
+      <span style="font-size:9px; color:var(--text-dim); display:flex; align-items:center; gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--emerald);display:inline-block;"></span>Tools</span>
+      <span style="font-size:9px; color:var(--text-dim); display:flex; align-items:center; gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--gold);display:inline-block;"></span>Domain</span>
+      <span style="font-size:9px; color:var(--text-dim); display:flex; align-items:center; gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:#f97316;display:inline-block;"></span>Business</span>
+      <span style="font-size:9px; color:var(--text-dim); display:flex; align-items:center; gap:4px;"><span style="width:8px;height:8px;border-radius:2px;background:var(--rose);display:inline-block;"></span>Soft Skills</span>
+    </div>
+  </div>
+
+  <!-- IMPACT BARS -->
+  <div class="panel animate d5">
+    <div class="panel-title"><span class="dot" style="background:var(--emerald)"></span> Impact Metrics</div>
+    <div style="margin-bottom:8px; display:flex; gap:16px; font-size:10px;">
+      <span style="color:var(--accent); display:flex; align-items:center; gap:4px;"><span style="width:10px;height:3px;border-radius:2px;background:var(--accent);display:inline-block;"></span>Wipro</span>
+      <span style="color:var(--gold); display:flex; align-items:center; gap:4px;"><span style="width:10px;height:3px;border-radius:2px;background:var(--gold);display:inline-block;"></span>Abhinandan</span>
+    </div>
+
+    <div class="impact-row"><div class="impact-label">Efficiency Gain</div><div class="impact-bar-wrap"><div class="impact-bar wipro" style="width:92%">140%</div></div></div>
+    <div class="impact-row"><div class="impact-label">Error Reduction</div><div class="impact-bar-wrap"><div class="impact-bar wipro" style="width:68%">82%</div></div></div>
+    <div class="impact-row"><div class="impact-label">Non-Compliance ID</div><div class="impact-bar-wrap"><div class="impact-bar abh" style="width:58%">70%</div></div></div>
+    <div class="impact-row"><div class="impact-label">ETA Visibility</div><div class="impact-bar-wrap"><div class="impact-bar wipro" style="width:55%">66%</div></div></div>
+    <div class="impact-row"><div class="impact-label">Rec. System Sales</div><div class="impact-bar-wrap"><div class="impact-bar abh" style="width:75%">₹112.5Cr</div></div></div>
+    <div class="impact-row"><div class="impact-label">Revenue Realized</div><div class="impact-bar-wrap"><div class="impact-bar abh" style="width:48%">₹44Cr</div></div></div>
+    <div class="impact-row"><div class="impact-label">Cost Savings</div><div class="impact-bar-wrap"><div class="impact-bar wipro" style="width:52%">$160K/yr</div></div></div>
+    <div class="impact-row"><div class="impact-label">Man-Hours Saved</div><div class="impact-bar-wrap"><div class="impact-bar wipro" style="width:18%">12%</div></div></div>
+    <div class="impact-row"><div class="impact-label">Cancellation Reduced</div><div class="impact-bar-wrap"><div class="impact-bar wipro" style="width:10%">5%</div></div></div>
+    <div class="impact-row"><div class="impact-label">Training Errors</div><div class="impact-bar-wrap"><div class="impact-bar wipro" style="width:24%">20%</div></div></div>
+  </div>
+
+  <!-- AWARDS -->
+  <div class="panel animate d6">
+    <div class="panel-title"><span class="dot" style="background:var(--gold)"></span> Awards & Highlights</div>
+    <div class="awards-list">
+      <div class="award-item">
+        <div class="award-year">'25</div>
+        <div class="award-icon" style="background:rgba(245,158,11,0.12)">🏆</div>
+        <div class="award-text"><strong>PPI Awardee</strong> — Top 1/3, Abhinandan Ventures</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'25</div>
+        <div class="award-icon" style="background:rgba(16,185,129,0.12)">🎓</div>
+        <div class="award-text"><strong>HSBC Scholarship</strong> — 100% tuition waiver (₹26L), IIMB</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'25</div>
+        <div class="award-icon" style="background:rgba(139,92,246,0.12)">🌍</div>
+        <div class="award-text"><strong>BPIM Switzerland</strong> — 1/30 of 600+, UN & WHO immersion</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'25</div>
+        <div class="award-icon" style="background:rgba(244,63,94,0.12)">🎬</div>
+        <div class="award-text"><strong>Lead Actor — NAFS</strong> — 5.4L+ views, Prod. by Amaal Mallik</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'23</div>
+        <div class="award-icon" style="background:rgba(59,130,246,0.12)">📊</div>
+        <div class="award-text"><strong>CAT 99+ %ile</strong> — Top 1% of 2.8L, 99%ile+ VARC</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'23</div>
+        <div class="award-icon" style="background:rgba(6,182,212,0.12)">🎯</div>
+        <div class="award-text"><strong>IIM Admits</strong> — Calcutta, Lucknow, Indore, Shillong</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'23</div>
+        <div class="award-icon" style="background:rgba(245,158,11,0.12)">⭐</div>
+        <div class="award-text"><strong>Going Extra Mile</strong> — 1/32, Promoted to Asst. Manager, Wipro</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'22</div>
+        <div class="award-icon" style="background:rgba(16,185,129,0.12)">💯</div>
+        <div class="award-text"><strong>5/5 Appraisal</strong> — 7 consecutive quarters + $6K/yr bonus</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'20</div>
+        <div class="award-icon" style="background:rgba(139,92,246,0.12)">🎭</div>
+        <div class="award-text"><strong>Kala Ghoda Arts Festival</strong> — Performer at Cross-maidan</div>
+      </div>
+      <div class="award-item">
+        <div class="award-year">'15</div>
+        <div class="award-icon" style="background:rgba(244,63,94,0.12)">🤖</div>
+        <div class="award-text"><strong>Robotics Semi-Finals</strong> — Led team at IIT Bombay national</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div style="text-align:center; padding:12px 36px 20px; font-size:10px; color:var(--text-dim); letter-spacing:1.5px; text-transform:uppercase; position:relative; z-index:10;">
+  IIM Bangalore &bull; Roll No. 2411500 &bull; pawan.gehaney24@iimb.ac.in &bull; Lateral & Final Placement 2026
+</div>
+
+</body>
+</html>
